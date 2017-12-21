@@ -37,10 +37,11 @@ using pGina.Shared.Interfaces;
 using pGina.Shared.Types;
 using pGina.Shared.Settings;
 using Abstractions.WindowsApi;
+using Newtonsoft.Json.Linq;
 
 namespace pGina.Plugin.SessionLimit
 {
-    public class PluginImpl : IPluginConfiguration, IPluginEventNotifications
+    public class PluginImpl : IPluginConfiguration, IPluginEventNotifications, IPluginImportExport
     {
         private ILog m_logger = LogManager.GetLogger("SessionLimitPlugin");
 
@@ -177,6 +178,21 @@ namespace pGina.Plugin.SessionLimit
         {
             m_logger.DebugFormat("LogoffEvent: {0}", sessId);
             m_cache.Remove(sessId);
+        }
+
+        public void Import(JToken pluginSettings)
+        {
+            var importSettings = pluginSettings.ToObject<ImportExportSettings>();
+            Settings.Store.GlobalLimit = importSettings.GlobalLimit;
+        }
+
+        public JToken Export()
+        {
+            var exportsettings = new ImportExportSettings
+            {
+                GlobalLimit = Settings.Store.GlobalLimit,
+            };
+            return JToken.FromObject(exportsettings);
         }
     }
 }

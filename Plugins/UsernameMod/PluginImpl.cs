@@ -25,9 +25,6 @@
 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
 
 using log4net;
@@ -36,10 +33,12 @@ using pGina.Shared.Interfaces;
 using pGina.Shared.Types;
 using pGina.Shared.Settings;
 using pGina.Plugin.UsernameMod.Rules;
+using Newtonsoft.Json.Linq;
+using pGina.Shared;
 
 namespace pGina.Plugin.UsernameMod
 {
-    public class UsernameModPlugin : IPluginConfiguration, IPluginAuthentication, IPluginAuthorization, IPluginAuthenticationGateway
+    public class UsernameModPlugin : IPluginConfiguration, IPluginAuthentication, IPluginAuthorization, IPluginAuthenticationGateway, IPluginImportExport
     {
         private ILog m_logger = LogManager.GetLogger("UsernameModPlugin");
         public static Guid SimpleUuid = new Guid("{98477B3A-830D-4BEE-B270-2D7435275F9C}");
@@ -259,6 +258,23 @@ namespace pGina.Plugin.UsernameMod
 
         public void Starting() { }
         public void Stopping() { }
+
+        public void Import(JToken pluginSettings)
+        {
+            var importSettings = pluginSettings.ToObject<ImportExportSettings>();
+            m_settings.ShowDescription = importSettings.ShowDescription;
+            m_settings.Description = importSettings.Description.EmptyStringIfNull();
+        }
+
+        public JToken Export()
+        {
+            var exportsettings = new ImportExportSettings
+            {
+                ShowDescription = m_settings.ShowDescription,
+                Description = m_settings.Description
+            };
+            return JToken.FromObject(exportsettings);
+        }
     }
 
     class UsernameModPluginException : Exception

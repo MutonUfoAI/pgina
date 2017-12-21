@@ -8,13 +8,17 @@
     <CoreSolution Include="pGina\src\pGina-3.x-vs2010.sln" />
     <PluginSolutions Include="Plugins\**\*.sln" />
     <OutputDirectories Include="Plugins\bin;pGina\src\bin;pGina\src\build" />
+    <PackagesDirectories Include="pGina\src\packages" />
   </ItemGroup>
   
   <!-- Build everything -->
   <Target Name="BuildAll" DependsOnTargets="BuildCore;BuildPlugins" />
-  
+    
   <!-- Build core pGina -->
   <Target Name="BuildCore">
+    <!-- Get Nuget Packages -->
+    <Exec Command='"$(MSBuildStartupDirectory)\.nuget\nuget.exe" install "$(MSBuildStartupDirectory)\pGina\src\packages.config" -OutputDirectory "$(MSBuildStartupDirectory)\pGina\src\packages" ' />
+    
     <!-- Build 64 bit platform -->
     <MSBuild Projects="@(CoreSolution)" ContinueOnError="false"
              Properties="Configuration=$(Configuration);Platform=x64">
@@ -38,6 +42,7 @@
     <MSBuild Projects="@(CoreSolution)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=Win32" />
     <MSBuild Projects="@(PluginSolutions)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=Any CPU" />
     <RemoveDir Directories="@(OutputDirectories)" />
+    <RemoveDir Directories="@(PackagesDirectories)" />
   </Target>
 
 </Project>

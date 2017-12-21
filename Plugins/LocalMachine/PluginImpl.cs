@@ -27,24 +27,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Diagnostics;
 using System.Security.Principal;
-using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.Threading;
-using System.IO;
 
 using log4net;
+using Newtonsoft.Json.Linq;
 
 using pGina.Shared.Interfaces;
 using pGina.Shared.Types;
-using Abstractions;
+using pGina.Shared;
 
 namespace pGina.Plugin.LocalMachine
-{
+{    
 
-    public class PluginImpl : IPluginAuthentication, IPluginAuthorization, IPluginAuthenticationGateway, IPluginConfiguration, IPluginEventNotifications, IPluginLogoffRequestAddTime, IPluginChangePassword
+    public class PluginImpl : IPluginAuthentication, IPluginAuthorization, IPluginAuthenticationGateway, IPluginConfiguration, IPluginEventNotifications, IPluginLogoffRequestAddTime, IPluginChangePassword, IPluginImportExport
     {
         // Per-instance logger
         private ILog m_logger = LogManager.GetLogger("LocalMachine");
@@ -710,6 +708,45 @@ namespace pGina.Plugin.LocalMachine
             {
                 Locker.ExitWriteLock();
             }
+        }
+
+        public void Import(JToken pluginSettings)
+        {
+            var importSettings = pluginSettings.ToObject<ImportExportSettings>();
+            Settings.Store.AlwaysAuthenticate = importSettings.AlwaysAuthenticate;
+            Settings.Store.AuthzApplyToAllUsers = importSettings.AuthzApplyToAllUsers;
+            Settings.Store.AuthzLocalAdminsOnly = importSettings.AuthzLocalAdminsOnly;
+            Settings.Store.AuthzLocalGroups = importSettings.AuthzLocalGroups.EmptyStringArrayIfNull();
+            Settings.Store.BackgroundTimerSeconds = importSettings.BackgroundTimerSeconds;
+            Settings.Store.CleanupUsers = importSettings.CleanupUsers.EmptyStringArrayIfNull();
+            Settings.Store.GroupCreateFailIsFail = importSettings.GroupCreateFailIsFail;
+            Settings.Store.MandatoryGroups = importSettings.MandatoryGroups.EmptyStringArrayIfNull();
+            Settings.Store.MirrorGroupsForAuthdUsers = importSettings.MirrorGroupsForAuthdUsers;
+            Settings.Store.RemoveProfiles = importSettings.RemoveProfiles;            
+            Settings.Store.ScramblePasswords = importSettings.ScramblePasswords;
+            Settings.Store.ScramblePasswordsExceptions = importSettings.ScramblePasswordsExceptions.EmptyStringArrayIfNull();
+            Settings.Store.ScramblePasswordsWhenLMAuthFails = importSettings.ScramblePasswordsWhenLMAuthFails;            
+        }
+
+        public JToken Export()
+        {
+            var exportsettings = new ImportExportSettings
+            {
+                AlwaysAuthenticate = Settings.Store.AlwaysAuthenticate,
+                AuthzApplyToAllUsers = Settings.Store.AuthzApplyToAllUsers,
+                AuthzLocalAdminsOnly = Settings.Store.AuthzLocalAdminsOnly,
+                AuthzLocalGroups = Settings.Store.AuthzLocalGroups,
+                BackgroundTimerSeconds = Settings.Store.BackgroundTimerSeconds,
+                CleanupUsers = Settings.Store.CleanupUsers,
+                GroupCreateFailIsFail = Settings.Store.GroupCreateFailIsFail,
+                MandatoryGroups = Settings.Store.MandatoryGroups,
+                MirrorGroupsForAuthdUsers = Settings.Store.MirrorGroupsForAuthdUsers,
+                RemoveProfiles = Settings.Store.RemoveProfiles,
+                ScramblePasswords = Settings.Store.ScramblePasswords,
+                ScramblePasswordsExceptions = Settings.Store.ScramblePasswordsExceptions,
+                ScramblePasswordsWhenLMAuthFails = Settings.Store.ScramblePasswordsWhenLMAuthFails
+            };
+            return JToken.FromObject(exportsettings);
         }
     }
 }

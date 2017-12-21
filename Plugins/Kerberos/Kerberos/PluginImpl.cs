@@ -7,10 +7,12 @@ using System.Diagnostics;
 
 using log4net;
 using pGina.Shared.Interfaces;
+using Newtonsoft.Json.Linq;
+using pGina.Shared;
 
 namespace pGina.Plugin.Kerberos
 {
-    public class PluginImpl : IPluginAuthentication, IPluginConfiguration
+    public class PluginImpl : IPluginAuthentication, IPluginConfiguration, IPluginImportExport
     {
         private ILog m_logger = LogManager.GetLogger("Kerberos");
 
@@ -119,6 +121,21 @@ namespace pGina.Plugin.Kerberos
                 default:
                     return new pGina.Shared.Types.BooleanResult() { Success = false, Message = "Failed to authenticate due to unknown error." + r };
             }
+        }
+
+        public void Import(JToken pluginSettings)
+        {
+            var importSettings = pluginSettings.ToObject<ImportExportSettings>();
+            Settings.Store.Realm = importSettings.Realm.EmptyStringIfNull();
+        }
+
+        public JToken Export()
+        {
+            var exportsettings = new ImportExportSettings
+            {
+                Realm = Settings.Store.Realm,
+            };
+            return JToken.FromObject(exportsettings);
         }
     }
 }

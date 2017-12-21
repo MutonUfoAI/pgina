@@ -40,7 +40,8 @@ using log4net;
 using pGina.Shared.Interfaces;
 using pGina.Shared.Types;
 using pGina.Shared.Settings;
-
+using Newtonsoft.Json.Linq;
+using pGina.Shared;
 
 namespace pGina.Plugin.RADIUS
 {
@@ -49,7 +50,7 @@ namespace pGina.Plugin.RADIUS
     //Idle-Timeout - Unsure if possible / pgina's responsibility
 
 
-    public class RADIUSPlugin : IPluginConfiguration, IPluginAuthentication, IPluginEventNotifications
+    public class RADIUSPlugin : IPluginConfiguration, IPluginAuthentication, IPluginEventNotifications, IPluginImportExport
     {
         private ILog m_logger = LogManager.GetLogger("RADIUSPlugin");
         public static Guid SimpleUuid = new Guid("{350047A0-2D0B-4E24-9F99-16CD18D6B142}");
@@ -548,6 +549,69 @@ namespace pGina.Plugin.RADIUS
                     m_logger.DebugFormat("Unable to send interim-update: {0}", e.Message);
                 }
             }
+        }
+
+        public void Import(JToken pluginSettings)
+        {
+            var importSettings = pluginSettings.ToObject<ImportExportSettings>();
+            Settings.Store.EnableAuth = importSettings.EnableAuth;
+            Settings.Store.EnableAcct = importSettings.EnableAcct;
+            Settings.Store.Server = importSettings.Server.EmptyStringIfNull();
+            Settings.Store.AuthPort = importSettings.AuthPort;
+            Settings.Store.AcctPort = importSettings.AcctPort;
+            Settings.Store.SetEncryptedSetting("SharedSecret", importSettings.SharedSecret.EmptyStringIfNull());
+            Settings.Store.Timeout = importSettings.Timeout;
+            Settings.Store.Retry = importSettings.Retry;
+
+            Settings.Store.SendNASIPAddress = importSettings.SendNASIPAddress;
+            Settings.Store.SendNASIdentifier = importSettings.SendNASIdentifier;
+            Settings.Store.NASIdentifier = importSettings.NASIdentifier.EmptyStringIfNull();
+            Settings.Store.SendCalledStationID = importSettings.SendCalledStationID;
+            Settings.Store.CalledStationID = importSettings.CalledStationID.EmptyStringIfNull();
+
+            Settings.Store.AcctingForAllUsers = importSettings.AcctingForAllUsers;
+            Settings.Store.SendInterimUpdates = importSettings.SendInterimUpdates;
+            Settings.Store.ForceInterimUpdates = importSettings.ForceInterimUpdates;
+            Settings.Store.InterimUpdateTime = importSettings.InterimUpdateTime;
+
+            Settings.Store.AllowSessionTimeout = importSettings.AllowSessionTimeout;
+            Settings.Store.WisprSessionTerminate = importSettings.WisprSessionTerminate;
+
+            Settings.Store.UseModifiedName = importSettings.UseModifiedName;
+            Settings.Store.IPSuggestion = importSettings.IPSuggestion.EmptyStringIfNull();
+        }
+
+        public JToken Export()
+        {
+            var exportsettings = new ImportExportSettings
+            {
+                EnableAuth = Settings.Store.EnableAuth,
+                EnableAcct = Settings.Store.EnableAcct,
+                Server = Settings.Store.Server,
+                AuthPort = Settings.Store.AuthPort,
+                AcctPort = Settings.Store.AcctPort,
+                SharedSecret = Settings.Store.GetEncryptedSetting("SharedSecret"),
+                Timeout = Settings.Store.Timeout,
+                Retry = Settings.Store.Retry,
+
+                SendNASIPAddress = Settings.Store.SendNASIPAddress,
+                SendNASIdentifier = Settings.Store.SendNASIdentifier,
+                NASIdentifier = Settings.Store.NASIdentifier,
+                SendCalledStationID = Settings.Store.SendCalledStationID,
+                CalledStationID = Settings.Store.CalledStationID,
+
+                AcctingForAllUsers = Settings.Store.AcctingForAllUsers,
+                SendInterimUpdates = Settings.Store.SendInterimUpdates,
+                ForceInterimUpdates = Settings.Store.ForceInterimUpdates,
+                InterimUpdateTime = Settings.Store.InterimUpdateTime,
+
+                AllowSessionTimeout = Settings.Store.AllowSessionTimeout,
+                WisprSessionTerminate = Settings.Store.WisprSessionTerminate,
+
+                UseModifiedName = Settings.Store.UseModifiedName,
+                IPSuggestion = Settings.Store.IPSuggestion
+            };
+            return JToken.FromObject(exportsettings);
         }
     }
 }

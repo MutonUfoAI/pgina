@@ -24,24 +24,55 @@
 	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+using log4net;
+using Newtonsoft.Json;
+using pGina.Core;
+using pGina.Core.ImportExport;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
 namespace pGina.Configuration
-{
+{    
     static class Program
     {
+        private static ILog m_logger = LogManager.GetLogger("Program");
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ConfigurationUI());
+            Framework.Init();
+            if (args.Count() == 1 && File.Exists(args[0]))
+            {
+                m_logger.InfoFormat("One argument found, it is a filename. Trying to import settings: {0}", args[0]);
+                var importend = false;
+                try
+                {
+                    StreamReader sr = new StreamReader(args[0]);
+                    var settingsstring = sr.ReadToEnd();
+                    sr.Close();
+                    ImportExportSettings importsettings = JsonConvert.DeserializeObject<ImportExportSettings>(settingsstring);
+                    var importReport = ImportExportHelper.SetImportExportSettings(importsettings);
+                    importend = true;
+                }
+                catch (Exception e)
+                {
+                    m_logger.InfoFormat("Overal import malfunction: {0}", e);
+                }
+                if (importend)
+                {
+                    m_logger.InfoFormat("Import finished");
+                }
+            }else{
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new ConfigurationUI());
+            }
         }
     }
 }

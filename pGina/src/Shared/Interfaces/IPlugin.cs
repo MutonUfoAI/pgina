@@ -27,6 +27,7 @@
 using System;
 using System.ServiceProcess;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace pGina.Shared.Interfaces
 {
@@ -53,6 +54,17 @@ namespace pGina.Shared.Interfaces
         /// post logon.
         /// </summary>
         void Stopping();
+    }
+
+    /// <summary>
+    /// Plugins which wish to integrate with the pGina configuration/Plugin
+    /// management UI must implement this interface
+    /// </summary>
+    public interface IPluginImportExport : IPluginBase
+    {
+        void Import(JToken pluginSettings);
+
+        JToken Export();
     }
 
     /// <summary>

@@ -26,18 +26,18 @@
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using log4net;
 
 using pGina.Shared.Interfaces;
 using pGina.Shared.Types;
 
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json.Linq;
+using pGina.Shared;
 
 namespace pGina.Plugin.MySQLAuth
 {
-    public class PluginImpl : IPluginAuthentication, IPluginAuthorization, IPluginAuthenticationGateway, IPluginConfiguration
+    public class PluginImpl : IPluginAuthentication, IPluginAuthorization, IPluginAuthenticationGateway, IPluginConfiguration, IPluginImportExport
     {
         public static readonly Guid PluginUuid = new Guid("{A89DF410-53CA-4FE1-A6CA-4479B841CA19}");
         private ILog m_logger = LogManager.GetLogger("MySQLAuth");
@@ -279,6 +279,85 @@ namespace pGina.Plugin.MySQLAuth
                 m_logger.ErrorFormat("Exception during authorization: {0}", e);
                 throw;
             }
+        }
+
+        public void Import(JToken pluginSettings)
+        {
+            var importSettings = pluginSettings.ToObject<ImportExportSettings>();
+            //Connection
+            Settings.Store.Host = importSettings.Host.EmptyStringIfNull();
+            Settings.Store.Port = importSettings.Port;
+            Settings.Store.UseSsl = importSettings.UseSsl;
+            Settings.Store.User = importSettings.User.EmptyStringIfNull();
+            Settings.Store.SetEncryptedSetting("Password",importSettings.Password.EmptyStringIfNull());
+            Settings.Store.Database = importSettings.Database.EmptyStringIfNull();
+
+            // User table
+            Settings.Store.Table = importSettings.Table.EmptyStringIfNull();
+            Settings.Store.HashEncoding = importSettings.HashEncoding;
+            Settings.Store.UsernameColumn = importSettings.UsernameColumn.EmptyStringIfNull();
+            Settings.Store.HashMethodColumn = importSettings.HashMethodColumn.EmptyStringIfNull();
+            Settings.Store.PasswordColumn = importSettings.PasswordColumn.EmptyStringIfNull();
+            Settings.Store.UserTablePrimaryKeyColumn = importSettings.UserTablePrimaryKeyColumn.EmptyStringIfNull();
+
+            // Group table
+            Settings.Store.GroupTableName = importSettings.GroupTableName.EmptyStringIfNull();
+            Settings.Store.GroupNameColumn = importSettings.GroupNameColumn.EmptyStringIfNull();
+            Settings.Store.GroupTablePrimaryKeyColumn = importSettings.GroupTablePrimaryKeyColumn.EmptyStringIfNull();
+
+            // User-Group table
+            Settings.Store.UserGroupTableName = importSettings.UserGroupTableName.EmptyStringIfNull();
+            Settings.Store.UserForeignKeyColumn = importSettings.UserForeignKeyColumn.EmptyStringIfNull();
+            Settings.Store.GroupForeignKeyColumn = importSettings.GroupForeignKeyColumn.EmptyStringIfNull();
+
+            // Authz Settings
+            Settings.Store.GroupAuthzRules = importSettings.GroupAuthzRules.EmptyStringArrayIfNull();
+            Settings.Store.AuthzRequireMySqlAuth = importSettings.AuthzRequireMySqlAuth;
+
+            // Gateway settings
+            Settings.Store.GroupGatewayRules = importSettings.GroupGatewayRules.EmptyStringArrayIfNull();
+            Settings.Store.PreventLogonOnServerError = importSettings.PreventLogonOnServerError;
+        }
+
+        public JToken Export()
+        {
+            var exportsettings = new ImportExportSettings
+            {
+                //Connection
+                Host = Settings.Store.Host,
+                Port = Settings.Store.Port,
+                UseSsl = Settings.Store.UseSsl,
+                User = Settings.Store.User,
+                Password = Settings.Store.GetEncryptedSetting("Password"),
+                Database = Settings.Store.Database,
+
+                // User table
+                Table = Settings.Store.Table,
+                HashEncoding = Settings.Store.HashEncoding,
+                UsernameColumn = Settings.Store.UsernameColumn,
+                HashMethodColumn = Settings.Store.HashMethodColumn,
+                PasswordColumn = Settings.Store.PasswordColumn,
+                UserTablePrimaryKeyColumn = Settings.Store.UserTablePrimaryKeyColumn,
+
+                // Group table
+                GroupTableName = Settings.Store.GroupTableName,
+                GroupNameColumn = Settings.Store.GroupNameColumn,
+                GroupTablePrimaryKeyColumn = Settings.Store.GroupTablePrimaryKeyColumn,
+
+                // User-Group table
+                UserGroupTableName = Settings.Store.UserGroupTableName,
+                UserForeignKeyColumn = Settings.Store.UserForeignKeyColumn,
+                GroupForeignKeyColumn = Settings.Store.GroupForeignKeyColumn,
+
+                // Authz Settings
+                GroupAuthzRules = Settings.Store.GroupAuthzRules,
+                AuthzRequireMySqlAuth = Settings.Store.AuthzRequireMySqlAuth,
+
+                // Gateway settings
+                GroupGatewayRules = Settings.Store.GroupGatewayRules,
+                PreventLogonOnServerError = Settings.Store.PreventLogonOnServerError,
+            };
+            return JToken.FromObject(exportsettings);
         }
     }
 }

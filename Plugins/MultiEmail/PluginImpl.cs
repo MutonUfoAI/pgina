@@ -43,10 +43,12 @@ using pGina.Shared.Interfaces;
 using pGina.Shared.Types;
 
 using log4net;
+using Newtonsoft.Json.Linq;
+using pGina.Shared;
 
 namespace pGina.Plugin.MultiEmail
 {
-    public class PluginImpl : IPluginConfiguration, IPluginAuthentication
+    public class PluginImpl : IPluginConfiguration, IPluginAuthentication, IPluginImportExport
     {
         private ILog m_logger = LogManager.GetLogger("MultiEmail");
         private JavaScriptSerializer m_jsonSerializer = new JavaScriptSerializer();
@@ -399,6 +401,23 @@ namespace pGina.Plugin.MultiEmail
             }
 
             return servers;
+        }
+
+        public void Import(JToken pluginSettings)
+        {
+            var importSettings = pluginSettings.ToObject<ImportExportSettings>( );
+            Settings.Store.ShowDescription = importSettings.ShowDescription;
+            Settings.Store.Servers = importSettings.Servers.EmptyStringIfNull();
+        }
+
+        public JToken Export()
+        {
+            var exportsettings = new ImportExportSettings
+            {
+                ShowDescription = Settings.Store.ShowDescription,
+                Servers = Settings.Store.Servers
+            };
+            return JToken.FromObject(exportsettings);
         }
     }
 

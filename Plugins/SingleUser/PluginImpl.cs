@@ -25,20 +25,18 @@
 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
 
 using log4net;
 
 using pGina.Shared.Interfaces;
 using pGina.Shared.Types;
-using pGina.Shared.Settings;
+using Newtonsoft.Json.Linq;
+using pGina.Shared;
 
 namespace pGina.Plugin.SingleUser
 {
-    public class PluginImpl : IPluginConfiguration, IPluginAuthenticationGateway
+    public class PluginImpl : IPluginConfiguration, IPluginAuthenticationGateway, IPluginImportExport
     {
         private ILog m_logger = LogManager.GetLogger("SingleUserPlugin");
         public static Guid PluginUuid = new Guid("{81F8034E-E278-4754-B10C-7066656DE5B7}");
@@ -147,5 +145,30 @@ namespace pGina.Plugin.SingleUser
 
         public void Starting() { }
         public void Stopping() { }
+
+        public void Import(JToken pluginSettings)
+        {
+            var importSettings = pluginSettings.ToObject<ImportExportSettings>();
+            Settings.Store.Username = importSettings.Username.EmptyStringIfNull();
+            Settings.Store.Domain = importSettings.Domain.EmptyStringIfNull();
+            Settings.Store.SetEncryptedSetting("Password", importSettings.Password.EmptyStringIfNull());
+            Settings.Store.RequireAllPlugins = importSettings.RequireAllPlugins;
+            Settings.Store.RequiredPluginList = importSettings.RequiredPluginList.EmptyStringArrayIfNull();
+            Settings.Store.RequirePlugins = importSettings.RequirePlugins;
+        }
+
+        public JToken Export()
+        {
+            var exportsettings = new ImportExportSettings
+            {
+                Username = Settings.Store.Username,
+                Domain = Settings.Store.Domain,
+                Password = Settings.Store.GetEncryptedSetting("Password"),
+                RequireAllPlugins = Settings.Store.RequireAllPlugins,
+                RequiredPluginList = Settings.Store.RequiredPluginList,
+                RequirePlugins = Settings.Store.RequirePlugins
+            };
+            return JToken.FromObject(exportsettings);
+        }
     }
 }

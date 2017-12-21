@@ -27,13 +27,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using Microsoft.Win32;
 
-namespace pGina.Configuration
+namespace pGina.Core
 {
-    class CredProvFilterConfig
+    public class CredProvFilterConfig
     {
         private static readonly string CRED_PROV_KEY = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\Credential Providers";
 
@@ -123,7 +122,7 @@ namespace pGina.Configuration
     }
 
 
-    class CredProv
+    public class CredProv
     {
         public string Name { get; set; }
         public Guid Uuid { get; set; }

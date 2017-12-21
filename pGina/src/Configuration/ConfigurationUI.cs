@@ -26,11 +26,9 @@
 */
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.ServiceProcess;
@@ -39,8 +37,6 @@ using Microsoft.Win32;
 
 using pGina.Core;
 using pGina.Core.Messages;
-
-using pGina.Shared.Logging;
 using pGina.Shared.Interfaces;
 
 using Abstractions.WindowsApi;
@@ -49,6 +45,8 @@ using Abstractions.Pipes;
 
 using log4net;
 using pGina.Shared.Types;
+using Newtonsoft.Json;
+using pGina.Core.ImportExport;
 
 namespace pGina.Configuration
 {
@@ -81,6 +79,7 @@ namespace pGina.Configuration
         private const string GATEWAY_COLUMN = "Gateway";
         private const string NOTIFICATION_COLUMN = "Notification";
         private const string PASSWORD_COLUMN = "Change Password";
+        private const string IMPORTEXPORT_COLUMN = "Import / Export";
 
         // Cred Prov Filter data grid view
         private const string CPF_CP_NAME_COLUMN = "Name";
@@ -91,12 +90,11 @@ namespace pGina.Configuration
         private const string CPF_CP_UUID_COLUMN = "Uuid";
 
         private LogViewWindow logWindow = null;
+        private ImportExportReportWindow importExportReportWindow = null;
 
         public ConfigurationUI()
         {
             VerifyRegistryAccess();
-            Framework.Init();
-
             InitializeComponent();
             InitOptionsTabs();
             InitPluginsDGV();
@@ -286,6 +284,7 @@ namespace pGina.Configuration
             if (m_pGinaServiceController != null)
             {
                 // Setup the timer that checks the service status periodically
+                m_serviceTimer = new System.Timers.Timer();
                 m_serviceTimer.Interval = 1500;
                 m_serviceTimer.SynchronizingObject = this.serviceStatusTB;
                 m_serviceTimer.AutoReset = true;
@@ -548,6 +547,14 @@ namespace pGina.Configuration
                 ReadOnly = true
             });
 
+            pluginsDG.Columns.Add(new DataGridViewCheckBoxColumn()
+            {
+                Name = IMPORTEXPORT_COLUMN,
+                HeaderText = "Can Import/Export",
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells,
+                ReadOnly = true
+            });
+
             pluginsDG.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 Name = PLUGIN_VERSION_COLUMN,
@@ -576,6 +583,7 @@ namespace pGina.Configuration
         void pluginsDG_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex >= 0 && e.RowIndex >= 0 &&
+                !pluginsDG[e.ColumnIndex, e.RowIndex].ReadOnly &&
                 pluginsDG[e.ColumnIndex, e.RowIndex].ValueType == typeof(bool))
             {
                 DataGridViewCell cell = this.pluginsDG[e.ColumnIndex, e.RowIndex];
@@ -669,9 +677,12 @@ namespace pGina.Configuration
                     }
 
                     this.m_plugins.Add(p.Uuid.ToString(), p);
+                    var importExportEnabled = p as IPluginImportExport != null;
                     pluginsDG.Rows.Add(
-                        new object[] { p.Name, false, false, false, false, false, p.Description, p.Version, p.Uuid.ToString() });
+                        new object[] { p.Name, false, false, false, false, false, p.Description, importExportEnabled, p.Version, p.Uuid.ToString() });
                     DataGridViewRow row = pluginsDG.Rows[i];
+
+                    row.Cells[IMPORTEXPORT_COLUMN].Tag = "DisplayOnlyCheckBox";
 
                     this.SetupCheckBoxCell<IPluginAuthentication>(row.Cells[AUTHENTICATION_COLUMN], p);
                     this.SetupCheckBoxCell<IPluginAuthorization>(row.Cells[AUTHORIZATION_COLUMN], p);
@@ -803,12 +814,13 @@ namespace pGina.Configuration
 
         private void pluginsDG_PaintCell(object sender, DataGridViewCellPaintingEventArgs e)
         {
-            // Determine if the cell should have a checkbox or not (via the ReadOnly setting),
+            // Determine if the cell should have a checkbox or not (via the ReadOnly setting and (no) Tag),
             // if not, we draw over the checkbox.
             if (e != null && sender != null)
             {
                 if (e.RowIndex >= 0 && e.ColumnIndex >= 0 &&
                     pluginsDG[e.ColumnIndex, e.RowIndex].ReadOnly &&
+                    pluginsDG[e.ColumnIndex, e.RowIndex].Tag == null &&
                     pluginsDG[e.ColumnIndex, e.RowIndex].ValueType == typeof(bool))
                 {
                     Type foo = pluginsDG[e.ColumnIndex, e.RowIndex].ValueType;
@@ -854,20 +866,11 @@ namespace pGina.Configuration
                 try
                 {
                     IPluginBase p = m_plugins[(string)row.Cells[PLUGIN_UUID_COLUMN].Value];
-                    int mask = 0;
-
-                    if (Convert.ToBoolean(row.Cells[AUTHENTICATION_COLUMN].Value))
-                        mask |= (int)Core.PluginLoader.State.AuthenticateEnabled;
-                    if (Convert.ToBoolean(row.Cells[AUTHORIZATION_COLUMN].Value))
-                        mask |= (int)Core.PluginLoader.State.AuthorizeEnabled;
-                    if (Convert.ToBoolean(row.Cells[GATEWAY_COLUMN].Value))
-                        mask |= (int)Core.PluginLoader.State.GatewayEnabled;
-                    if (Convert.ToBoolean(row.Cells[NOTIFICATION_COLUMN].Value))
-                        mask |= (int)Core.PluginLoader.State.NotificationEnabled;
-                    if (Convert.ToBoolean(row.Cells[PASSWORD_COLUMN].Value))
-                        mask |= (int)Core.PluginLoader.State.ChangePasswordEnabled;
-
-                    Core.Settings.Get.SetSetting(p.Uuid.ToString(), mask);
+                    PluginSettings.SetMask(p.Uuid, Convert.ToBoolean(row.Cells[AUTHENTICATION_COLUMN].Value),
+                        Convert.ToBoolean(row.Cells[AUTHORIZATION_COLUMN].Value),
+                        Convert.ToBoolean(row.Cells[GATEWAY_COLUMN].Value),
+                        Convert.ToBoolean(row.Cells[NOTIFICATION_COLUMN].Value),
+                        Convert.ToBoolean(row.Cells[PASSWORD_COLUMN].Value));
                 }
                 catch (Exception e)
                 {
@@ -886,14 +889,13 @@ namespace pGina.Configuration
         }
 
         private void SavePluginOrder(DataGridView grid, Type pluginType)
-        {
-            string setting = pluginType.Name + "_Order";
-            List<string> orderedList = new List<string>();
+        {                        
+            List<Guid> orderedList = new List<Guid>();
             foreach (DataGridViewRow row in grid.Rows)
-            {
-                orderedList.Add((string)row.Cells[PLUGIN_UUID_COLUMN].Value);
+            {                
+                orderedList.Add(Guid.Parse((string)row.Cells[PLUGIN_UUID_COLUMN].Value));
             }
-            Settings.Get.SetSetting(setting, orderedList.ToArray<string>());
+            PluginSettings.SavePluginOrder(orderedList, pluginType);
         }
 
         private bool CheckPluginSettings()
@@ -1617,6 +1619,65 @@ namespace pGina.Configuration
         private void Btn_help(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("http://mutonufoai.github.io/pgina/documentation.html");
+        }
+
+        private void ShowImportExportReport(ImportExportReport report)
+        {
+            importExportReportWindow = new ImportExportReportWindow();
+            foreach (var reportrow in report.Rows)
+            {
+                importExportReportWindow.LogTextBox.AppendText(string.Format("{0}: {1} \n", reportrow.MessageLevel, reportrow.Message));
+            }
+            importExportReportWindow.Visible = true;
+        }
+
+        private void ImportButton_Click(object sender, EventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog { Filter = "JSON File | *.json" };
+            
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    StreamReader sr = new StreamReader(openFileDialog.FileName);
+                    var settingsstring = sr.ReadToEnd();
+                    sr.Close();
+                    ImportExportSettings importsettings = JsonConvert.DeserializeObject<ImportExportSettings>(settingsstring);
+                    var report = ImportExportHelper.SetImportExportSettings(importsettings);
+                    ShowImportExportReport(report);
+                }
+                catch (Exception ex)
+                {
+                    m_logger.Error(ex);
+                    MessageBox.Show("Overal import malfunction");
+                }
+            }
+            LoadGeneralSettings();
+            LoadPluginOrderListsFromReg();
+            RefreshPluginLists();
+            dgvCredProvFilter.DataSource = CredProvFilterConfig.LoadCredProvsAndFilterSettings();
+        }
+
+        private void ExportButton_Click(object sender, EventArgs e)
+        {
+            if (SaveSettings())
+            {
+                var saveFileDialog = new SaveFileDialog
+                {
+                    FileName = "pGinaSettings.json",
+                    Filter = "JSON File | *.json"
+                };
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    var exportresponse = ImportExportHelper.GetImportExportSettings();
+                    var json = JsonConvert.SerializeObject(exportresponse.Settings);
+                    var writer = new StreamWriter(saveFileDialog.OpenFile());
+                    writer.WriteLine(json);
+                    writer.Dispose();
+                    writer.Close();
+                    ShowImportExportReport(exportresponse.Report);
+                }
+            }
         }
     }
 }

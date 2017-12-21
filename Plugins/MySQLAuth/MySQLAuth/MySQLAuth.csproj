@@ -43,6 +43,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\mysql\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\pGina\src\bin\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="pGina.Shared, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\SDK\pGina.Shared.dll</HintPath>
@@ -65,6 +69,7 @@
       <DependentUpon>Configuration.cs</DependentUpon>
     </Compile>
     <Compile Include="GroupRules.cs" />
+    <Compile Include="ImportExportSettings.cs" />
     <Compile Include="MySqlUserDataSource.cs" />
     <Compile Include="PluginImpl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -14,7 +14,8 @@
     <FileAlignment>512</FileAlignment>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -45,7 +46,11 @@
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\external\lib\log4net.dll</HintPath>
+      <HintPath>..\packages\log4net.2.0.8\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -69,7 +74,12 @@
     <Compile Include="ConfigurationUI.Designer.cs">
       <DependentUpon>ConfigurationUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="CredProvFilterConfig.cs" />
+    <Compile Include="ImportExportReportWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImportExportReportWindow.Designer.cs">
+      <DependentUpon>ImportExportReportWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="LogViewWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,6 +90,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ConfigurationUI.resx">
       <DependentUpon>ConfigurationUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImportExportReportWindow.resx">
+      <DependentUpon>ImportExportReportWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LogViewWindow.resx">
       <DependentUpon>LogViewWindow.cs</DependentUpon>

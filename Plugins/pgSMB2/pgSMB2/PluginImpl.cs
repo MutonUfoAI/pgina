@@ -37,10 +37,12 @@ using pGina.Shared.Interfaces;
 using pGina.Shared.Types;
 using Abstractions.WindowsApi;
 using Abstractions.Windows;
+using Newtonsoft.Json.Linq;
+using pGina.Shared;
 
 namespace pGina.Plugin.pgSMB2
 {
-    public class PluginImpl : IPluginAuthenticationGateway, IPluginConfiguration, IPluginEventNotifications, IPluginLogoffRequestAddTime
+    public class PluginImpl : IPluginAuthenticationGateway, IPluginConfiguration, IPluginEventNotifications, IPluginLogoffRequestAddTime, IPluginImportExport
     {
         private ILog m_logger = LogManager.GetLogger("pgSMB2");
 
@@ -525,6 +527,53 @@ namespace pGina.Plugin.pgSMB2
             {
                 Locker.ExitWriteLock();
             }
+        }
+
+        public void Import(JToken pluginSettings)
+        {
+            var importSettings = pluginSettings.ToObject<ImportExportSettings>();
+            Settings.Store.SMBshare = importSettings.SMBshare.EmptyStringIfNull();
+            Settings.Store.RoamingSource = importSettings.RoamingSource.EmptyStringIfNull();
+            Settings.Store.Filename = importSettings.Filename.EmptyStringIfNull();
+            Settings.Store.TempComp = importSettings.TempComp.EmptyStringIfNull();
+            Settings.Store.ConnectRetry = importSettings.ConnectRetry;
+            Settings.Store.Compressor = importSettings.Compressor.EmptyStringIfNull();
+            Settings.Store.CompressCLI = importSettings.CompressCLI.EmptyStringIfNull();
+            Settings.Store.UncompressCLI = importSettings.UncompressCLI.EmptyStringIfNull();
+
+            Settings.Store.HomeDir = importSettings.HomeDir.EmptyStringIfNull();
+            Settings.Store.HomeDirDrive = importSettings.HomeDirDrive.EmptyStringIfNull();
+            Settings.Store.ScriptPath = importSettings.ScriptPath.EmptyStringIfNull();
+            Settings.Store.MaxStore = importSettings.MaxStore;
+
+            Settings.StoreGlobal.MaxStoreExclude = importSettings.MaxStoreExclude.EmptyStringIfNull();
+            Settings.StoreGlobal.MaxStoreText = importSettings.MaxStoreText.EmptyStringArrayIfNull();
+            Settings.StoreGlobal.ACE = importSettings.ACE.EmptyStringIfNull();
+        }
+
+        public JToken Export()
+        {
+            var exportsettings = new ImportExportSettings
+            {
+                SMBshare = Settings.Store.SMBshare,
+                RoamingSource = Settings.Store.RoamingSource,
+                Filename = Settings.Store.Filename,
+                TempComp = Settings.Store.TempComp,
+                ConnectRetry = Settings.Store.ConnectRetry,
+                Compressor = Settings.Store.Compressor,
+                CompressCLI = Settings.Store.CompressCLI,
+                UncompressCLI = Settings.Store.UncompressCLI,
+
+                HomeDir = Settings.Store.HomeDir,
+                HomeDirDrive = Settings.Store.HomeDirDrive,
+                ScriptPath = Settings.Store.ScriptPath,
+                MaxStore = Settings.Store.MaxStore,
+
+                MaxStoreExclude = Settings.StoreGlobal.MaxStoreExclude,
+                MaxStoreText = Settings.StoreGlobal.MaxStoreText,
+                ACE = Settings.StoreGlobal.ACE,
+            };
+            return JToken.FromObject(exportsettings);
         }
     }
 }

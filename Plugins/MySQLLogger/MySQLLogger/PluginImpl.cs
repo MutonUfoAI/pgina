@@ -38,12 +38,14 @@ using Abstractions.WindowsApi;
 using log4net;
 
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json.Linq;
+using pGina.Shared;
 
 namespace pGina.Plugin.MySqlLogger
 {
     enum LoggerMode { EVENT, SESSION };
 
-    public class PluginImpl : IPluginConfiguration, IPluginEventNotifications
+    public class PluginImpl : IPluginConfiguration, IPluginEventNotifications, IPluginImportExport
     {
         public static readonly Guid PluginUuid = new Guid("B68CF064-9299-4765-AC08-ACB49F93F892");
         private ILog m_logger = LogManager.GetLogger("MySqlLoggerPlugin");
@@ -75,6 +77,59 @@ namespace pGina.Plugin.MySqlLogger
         {
             Configuration dlg = new Configuration();
             dlg.ShowDialog();
+        }
+
+        public void Import(JToken pluginSettings)
+        {
+            var importSettings = pluginSettings.ToObject<ImportExportSettings>();
+            Settings.Store.EventMode = importSettings.EventMode;
+            Settings.Store.SessionMode = importSettings.SessionMode;
+            Settings.Store.Host = importSettings.Host.EmptyStringIfNull();
+            Settings.Store.Port = importSettings.Port;
+            Settings.Store.User = importSettings.User.EmptyStringIfNull();
+            Settings.Store.SetEncryptedSetting("Password", importSettings.Password.EmptyStringIfNull());
+            Settings.Store.SessionTable = importSettings.SessionTable.EmptyStringIfNull();
+            Settings.Store.EventTable = importSettings.EventTable.EmptyStringIfNull();
+
+            Settings.Store.EvtLogon = importSettings.EvtLogon;
+            Settings.Store.EvtLogoff = importSettings.EvtLogoff;
+            Settings.Store.EvtLock = importSettings.EvtLock;
+            Settings.Store.EvtUnlock = importSettings.EvtUnlock;
+            Settings.Store.EvtConsoleConnect = importSettings.EvtConsoleConnect;
+            Settings.Store.EvtConsoleDisconnect = importSettings.EvtConsoleDisconnect;
+            Settings.Store.EvtRemoteControl = importSettings.EvtRemoteControl;
+            Settings.Store.EvtRemoteConnect = importSettings.EvtRemoteConnect;
+            Settings.Store.EvtRemoteDisconnect = importSettings.EvtRemoteDisconnect;
+
+            Settings.Store.UseModifiedName = importSettings.UseModifiedName;
+        }
+
+        public JToken Export()
+        {
+            var exportsettings = new ImportExportSettings
+            {
+                EventMode = Settings.Store.EventMode,
+                SessionMode = Settings.Store.SessionMode,
+                Host = Settings.Store.Host,
+                Port = Settings.Store.Port,
+                User = Settings.Store.User,
+                Password = Settings.Store.GetEncryptedSetting("Password"),
+                SessionTable = Settings.Store.SessionTable,
+                EventTable = Settings.Store.EventTable,
+
+                EvtLogon = Settings.Store.EvtLogon,
+                EvtLogoff = Settings.Store.EvtLogoff,
+                EvtLock = Settings.Store.EvtLock,
+                EvtUnlock = Settings.Store.EvtUnlock,
+                EvtConsoleConnect = Settings.Store.EvtConsoleConnect,
+                EvtConsoleDisconnect = Settings.Store.EvtConsoleDisconnect,
+                EvtRemoteControl = Settings.Store.EvtRemoteControl,
+                EvtRemoteConnect = Settings.Store.EvtRemoteConnect,
+                EvtRemoteDisconnect = Settings.Store.EvtRemoteDisconnect,
+
+                UseModifiedName = Settings.Store.UseModifiedName
+            };
+            return JToken.FromObject(exportsettings);
         }
 
         public void SessionChange(int SessionId, System.ServiceProcess.SessionChangeReason Reason, SessionProperties properties)
