@@ -44,6 +44,9 @@ namespace pGina.Plugin.Ldap
 
         public LdapPlugin()
         {
+            // Initialize settings during the plugin load
+            dynamic settings = Settings.Store;
+            
             using(Process me = Process.GetCurrentProcess())
             {
                 m_logger.DebugFormat("LDAP Plugin initialized on {0} in PID: {1} Session: {2}", Environment.MachineName, me.Id, me.SessionId);
