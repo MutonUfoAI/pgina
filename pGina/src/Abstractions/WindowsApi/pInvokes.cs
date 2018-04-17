@@ -517,6 +517,9 @@ namespace Abstractions.WindowsApi
             [DllImport("netapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
             internal static extern int NetUserSetInfo([MarshalAs(UnmanagedType.LPWStr)] string servername, string username, int level, ref structenums.USER_INFO_4 buf, out Int32 parm_err);
 
+            [DllImport("netapi32.dll", CharSet = CharSet.Unicode)]
+            internal static extern int NetUserSetInfo([MarshalAs(UnmanagedType.LPWStr)] string servername, string username, int level, ref structenums.USER_INFO_1003 buf, out UInt32 parm_err);
+
             [DllImport("Netapi32.dll", SetLastError = true)]
             internal static extern int NetApiBufferFree(IntPtr Buffer);
 
@@ -875,6 +878,12 @@ namespace Abstractions.WindowsApi
                 public int dwPlatformId;
                 [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
                 public char[] szCSDVersion;
+            }
+
+            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+            public struct USER_INFO_1003
+            {
+                public string sPassword;
             }
 
             [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -2067,6 +2076,28 @@ namespace Abstractions.WindowsApi
             if ((ret != 0) && (ret != 2224)) // If the call fails we get a non-zero value
             {
                 LibraryLogging.Error("NetUserAdd error:{0} {1}", ret, LastError());
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// modify local user password based on a USER_INFO_1003 struct
+        /// based on http://www.pinvoke.net/default.aspx/netapi32.netusersetinfo
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public static Boolean SetUserPassword(string username, string password)
+        {
+            structenums.USER_INFO_1003 o = new structenums.USER_INFO_1003();
+            o.sPassword = password;
+            uint parm_err;
+            SafeNativeMethods.NetUserSetInfo(null, username, 1003, ref o, out parm_err);
+            if (parm_err != 0) // If the call fails we get a non-zero value
+            {
+                LibraryLogging.Error("NetUserSetInfo error:{0} {1}", parm_err, LastError());
                 return false;
             }
 

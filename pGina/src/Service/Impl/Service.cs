@@ -50,6 +50,7 @@ using pGina.Shared.Types;
 using Abstractions.Pipes;
 using Abstractions.Logging;
 using Abstractions.Helpers;
+using Abstractions.Windows;
 
 namespace pGina.Service.Impl
 {
@@ -57,6 +58,7 @@ namespace pGina.Service.Impl
     {
         private ILog m_logger = LogManager.GetLogger("pGina.Service.Impl");
         private ILog m_abstractLogger = LogManager.GetLogger("Abstractions");
+        private readonly string m_pGinaCreatedComment = "pGina created";
         private PipeServer m_server = null;
         private ObjectCache<int, List<SessionProperties>> m_sessionPropertyCache = new ObjectCache<int, List<SessionProperties>>();
         private List<int> sessionlogoff = new List<int>();
@@ -411,9 +413,10 @@ namespace pGina.Service.Impl
 
                     // is this user a local user and was not created by pGina
                     Abstractions.WindowsApi.pInvokes.structenums.USER_INFO_4 userinfo4 = new Abstractions.WindowsApi.pInvokes.structenums.USER_INFO_4();
-                    if (Abstractions.WindowsApi.pInvokes.UserGet(sessionDriver.UserInformation.Username, ref userinfo4))
+                    var localuserexists = Abstractions.WindowsApi.pInvokes.UserGet(sessionDriver.UserInformation.Username, ref userinfo4);
+                    if (localuserexists)
                     {
-                        if (!userinfo4.comment.Contains("pGina created"))
+                        if (!userinfo4.comment.Contains(m_pGinaCreatedComment))
                         {
                             result.Success = Abstractions.WindowsApi.pInvokes.ValidateUser(sessionDriver.UserInformation.Username, sessionDriver.UserInformation.Domain, sessionDriver.UserInformation.Password);
                             if (result.Success)
@@ -468,22 +471,12 @@ namespace pGina.Service.Impl
                             }
                             else
                             {
-                                // verify that this UACed login is present somewhere in m_sessionPropertyCache
-                                // if not, this login is not backed by m_sessionPropertyCache
-                                foreach (int session in m_sessionPropertyCache.GetAll())
-                                {
-                                    if (m_sessionPropertyCache.Get(session).Any(s => s.GetTrackedSingle<UserInformation>().Username.Equals(sessionDriver.UserInformation.Username, StringComparison.CurrentCultureIgnoreCase)))
-                                    {
-                                        m_logger.DebugFormat("User:{0} is pGina UACed in Session:{1}", sessionDriver.UserInformation.Username, session);
-                                        isUACLoggedIN = true;
-                                        break;
-                                    }
-                                }
+                                isUACLoggedIN = CheckIfUserWasLoginWithpGina(sessionDriver);
                                 // is this user a local user and was not created by pGina
                                 /*Abstractions.WindowsApi.pInvokes.structenums.USER_INFO_4 userinfo4 = new Abstractions.WindowsApi.pInvokes.structenums.USER_INFO_4();
                                 if (Abstractions.WindowsApi.pInvokes.UserGet(sessionDriver.UserInformation.Username, ref userinfo4))
                                 {
-                                    if (!userinfo4.comment.Contains("pGina created"))
+                                    if (!userinfo4.comment.Contains(m_pGinaCreated))
                                     {
                                         m_logger.DebugFormat("User:{0} is local non pGina", sessionDriver.UserInformation.Username);
                                         isUACLoggedIN = true;
@@ -513,17 +506,45 @@ namespace pGina.Service.Impl
                     else
                     {
                         // testing. ValidateCredentials would be correct here
-                        if (!Abstractions.WindowsApi.pInvokes.ValidateUser(sessionDriver.UserInformation.Username, sessionDriver.UserInformation.Domain, sessionDriver.UserInformation.Password))
+                        if (CheckIfUserWasLoginWithpGina(sessionDriver))
                         {
-                            m_logger.ErrorFormat("Query local SAM: Bad password");
-                            return new LoginResponseMessage()
+                            // Session is a pGina session, Validate pGine Credentials not the local-user (SAM). Password can be changed.
+                            result = sessionDriver.PerformProcess(sessionDriver.AuthenticateUser);
+                            if (!result.Success)
                             {
-                                Result = false,
-                                Message = "Bad password",
-                                Username = sessionDriver.UserInformation.Username,
-                                Domain = sessionDriver.UserInformation.Domain,
-                                Password = sessionDriver.UserInformation.Password
-                            };
+                                m_logger.ErrorFormat("sessionDriver.AuthenticateUser failed: {0}", result.Message);
+                                return new LoginResponseMessage()
+                                {
+                                    Result = false,
+                                    Message = "Bad password",
+                                    Username = sessionDriver.UserInformation.Username,
+                                    Domain = sessionDriver.UserInformation.Domain,
+                                    Password = sessionDriver.UserInformation.Password
+                                };
+                            }else
+                            {
+                                if (localuserexists && userinfo4.comment.Contains(m_pGinaCreatedComment))
+                                {
+                                    // if there local-user and it is a pGina-user the password may be changed in external system, change passsword of local-created-user to the new password
+                                    Abstractions.WindowsApi.pInvokes.SetUserPassword(sessionDriver.UserInformation.Username, sessionDriver.UserInformation.Password);
+                                }   
+                            }
+                        }
+                        else
+                        {
+                            // Session is not a pGina session, use local-user Credentials validation
+                            if (!Abstractions.WindowsApi.pInvokes.ValidateUser(sessionDriver.UserInformation.Username, sessionDriver.UserInformation.Domain, sessionDriver.UserInformation.Password))
+                            {
+                                m_logger.ErrorFormat("Query local SAM: Bad password");
+                                return new LoginResponseMessage()
+                                {
+                                    Result = false,
+                                    Message = "Bad password",
+                                    Username = sessionDriver.UserInformation.Username,
+                                    Domain = sessionDriver.UserInformation.Domain,
+                                    Password = sessionDriver.UserInformation.Password
+                                };
+                            }
                         }
                     }
 
@@ -642,6 +663,22 @@ namespace pGina.Service.Impl
                 return new LoginResponseMessage() { Result = false, Message = "Internal error" };
             }
         }
+
+        // verify that this UACed login is present somewhere in m_sessionPropertyCache
+        // if not, this login is not backed by m_sessionPropertyCache
+        private bool CheckIfUserWasLoginWithpGina(PluginDriver sessionDriver)
+        {
+            foreach (int session in m_sessionPropertyCache.GetAll())
+            {
+                if (m_sessionPropertyCache.Get(session).Any(s => s.GetTrackedSingle<UserInformation>().Username.Equals(sessionDriver.UserInformation.Username, StringComparison.CurrentCultureIgnoreCase)))
+                {
+                    m_logger.DebugFormat("User:{0} is pGina UACed in Session:{1}", sessionDriver.UserInformation.Username, session);
+                    return true;
+                }
+            }
+            return false;
+        }
+
 
         private DynamicLabelResponseMessage HandleDynamicLabelRequest(DynamicLabelRequestMessage msg)
         {

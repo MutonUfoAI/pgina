@@ -114,6 +114,11 @@ namespace pGina.Core
 
         public BooleanResult PerformLoginProcess()
         {
+            return PerformProcess(ExecuteLoginChain);
+        }
+
+        public BooleanResult PerformProcess(Func<BooleanResult> process)
+        {
             try
             {
                 // Set the original username to the current username if not already set
@@ -126,7 +131,7 @@ namespace pGina.Core
 
                 // Execute login
                 BeginChain();
-                BooleanResult result = ExecuteLoginChain();
+                BooleanResult result = process();
                 EndChain();
 
                 return result;
