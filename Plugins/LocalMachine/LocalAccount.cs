@@ -294,7 +294,19 @@ namespace pGina.Plugin.LocalMachine
 
                     continue;
                 }
+                catch (System.Runtime.InteropServices.COMException e)
+                {
+                    m_logger.ErrorFormat("COMException when checking group membership for user {0} in group {1}." +
+                        "  This usually means that you have a domain user/group in your local group. but you are running pGina-service with a local/machine admin." +
+                        "  I strongly recommend that you fix this problem as soon as possible by delete the domain user/group or run de service as a domain user with admin rights on this pc.",
+                        user.Name, group.Name);
+                    m_logger.Error(e);
+                    // Sanity check to avoid infinite loops
+                    errorCount++;
+                    if (errorCount > 1000) return false;
 
+                    continue;
+                }
                 if (ok)
                 {
                     Principal principal = membersEnum.Current;
@@ -838,30 +850,40 @@ namespace pGina.Plugin.LocalMachine
         private static List<GroupPrincipal> GetGroups(UserPrincipal user)
         {
             List<GroupPrincipal> result = new List<GroupPrincipal>();
-
-            // Get all groups using a PrincipalSearcher and
-            GroupPrincipal filter = new GroupPrincipal(m_machinePrincipal);
-            using (PrincipalSearcher searcher = new PrincipalSearcher(filter))
+            PrincipalSearchResult<Principal> sResult;
+            try
             {
-                PrincipalSearchResult<Principal> sResult = searcher.FindAll();
-                foreach (Principal p in sResult)
+                // Get all groups using a PrincipalSearcher and
+                GroupPrincipal filter = new GroupPrincipal(m_machinePrincipal);
+                using (PrincipalSearcher searcher = new PrincipalSearcher(filter))
                 {
-                    if (p is GroupPrincipal)
-                    {
-                        GroupPrincipal gp = (GroupPrincipal)p;
-                        if (LocalAccount.IsUserInGroup(user, gp))
-                            result.Add(gp);
-                        else
-                            gp.Dispose();
-                    }
-                    else
-                    {
-                        p.Dispose();
-                    }
+                    sResult = searcher.FindAll();
                 }
             }
+            catch
+            {
+                // fallback for machine running pgina as local/machine admin and have groups from a domain.
+                // Failed to process gateway for ******* message: Unable to sync users local group membership: System.Runtime.InteropServices.COMException (0x80070035): The network path was not found.
+                sResult = user.GetGroups();
+            }
+
+            foreach (Principal p in sResult)
+            {
+                if (p is GroupPrincipal)
+                {
+                    GroupPrincipal gp = (GroupPrincipal)p;
+                    if (LocalAccount.IsUserInGroup(user, gp))
+                        result.Add(gp);
+                    else
+                        gp.Dispose();
+                }
+                else
+                {
+                    p.Dispose();
+                }
+            }
+
             return result;
         }
-
     }
 }
