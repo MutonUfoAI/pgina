@@ -62,7 +62,7 @@ namespace pGina.Plugin.Ldap
         private bool m_useSsl;
 
         /// <summary>
-        /// Whether or not to use SSL
+        /// Whether or not to use TLS
         /// </summary>
         private bool m_useTls;
 
@@ -97,6 +97,7 @@ namespace pGina.Plugin.Ldap
         {
             m_conn = null;
             m_cert = null;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             Timeout = Settings.Store.LdapTimeout;
             m_useSsl = Settings.Store.UseSsl;
             m_useTls = Settings.Store.UseTls;
@@ -140,7 +141,7 @@ namespace pGina.Plugin.Ldap
             {
                 this.Close();
             }
-
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             m_conn = new LdapConnection(m_serverIdentifier);
             m_conn.Timeout = new System.TimeSpan(0,0,Timeout);
             m_logger.DebugFormat("Timeout set to {0} seconds.", Timeout);
@@ -157,7 +158,7 @@ namespace pGina.Plugin.Ldap
             {
                 try
                 {
-                    m_conn.SessionOptions.StartTransportLayerSecurity(new DirectoryControlCollection());
+                    m_conn.SessionOptions.SecureSocketLayer = m_useTls;
                 }
                 catch (Exception e)
                 {
@@ -427,8 +428,6 @@ namespace pGina.Plugin.Ldap
             if (m_conn != null)
             {
                 m_logger.DebugFormat("Closing LDAP connection to {0}.", m_conn.SessionOptions.HostName);
-                if (m_useTls)
-                    m_conn.SessionOptions.StopTransportLayerSecurity();
                 m_conn.Dispose();
                 m_conn = null;
             }

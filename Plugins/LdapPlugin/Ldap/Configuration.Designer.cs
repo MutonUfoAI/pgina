@@ -353,8 +353,8 @@
             this.useTlsCheckBox.Name = "useTlsCheckBox";
             this.useTlsCheckBox.Size = new System.Drawing.Size(68, 17);
             this.useTlsCheckBox.TabIndex = 7;
-            this.useTlsCheckBox.Text = "StartTLS";
-            this.descriptionToolTip.SetToolTip(this.useTlsCheckBox, "Use StartTLS if your LDAP server is not using an alternative (636) port for encry" +
+            this.useTlsCheckBox.Text = "Use TLS";
+            this.descriptionToolTip.SetToolTip(this.useTlsCheckBox, "Use TLS if your LDAP server is not using an alternative (636) port for encry" +
                     "ption\nYou can run encryption and clear text over 389");
             this.useTlsCheckBox.UseVisualStyleBackColor = true;
             this.useTlsCheckBox.CheckedChanged += new System.EventHandler(this.useTlsCheckBox_CheckedChanged);

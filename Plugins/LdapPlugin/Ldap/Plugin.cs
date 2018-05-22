@@ -358,20 +358,12 @@ namespace pGina.Plugin.Ldap
                     {
                         if (entry.Method.HasFlag(Methods.ADPWD))
                         {
-                            bool ADpwd = false;
-                            string pwdmessage = "";
                             foreach (string server in hosts)
                             {
-                                pwdmessage = Abstractions.WindowsApi.pInvokes.UserChangePassword(server, userInfo.Username, userInfo.oldPassword, userInfo.Password);
-                                if (pwdmessage == "")
+                                if (Abstractions.WindowsApi.pInvokes.UserChangePassword(server, userInfo.Username, userInfo.oldPassword, userInfo.Password) == "")
                                 {
-                                    ADpwd = true;
                                     break;
                                 }
-                            }
-                            if (!ADpwd)
-                            {
-                                return new BooleanResult { Success = false, Message = "Failed to change password.\n" + pwdmessage };
                             }
                             continue;
                         }

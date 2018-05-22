@@ -1,5 +1,5 @@
 #define MyAppName "pGina.fork"
-#define MyAppVersion "3.9.9.12"
+#define MyAppVersion "3.9.9.13.3"
 #define MyAppPublisher "pGina Team"
 #define MyAppURL "http://www.pgina.org/"
 #define MyAppExeName "pGina.Configuration.exe"
@@ -10,8 +10,8 @@
 ; Use some useful packaging stuff from: http://tonaday.blogspot.com/2010/12/innosetup.html
 // dotnet_Passive enabled shows the .NET/VC2010 installation progress, as it can take quite some time
 #define dotnet_Passive
-#define use_dotnetfx40
-#define use_vc2010
+#define use_dotnetfx461
+#define use_vc2015
 
 // Enable the required define(s) below if a local event function (prepended with Local) is used
 //#define haveLocalPrepareToInstall
@@ -87,12 +87,12 @@ Filename: "{app}\pGina.InstallUtil.exe"; Parameters: "post-uninstall"; StatusMsg
 #include "scripts\products\winversion.iss"
 #include "scripts\products\fileversion.iss"
 
-#ifdef use_dotnetfx40
-#include "scripts\products\dotnetfx40client.iss"
-#include "scripts\products\dotnetfx40full.iss"
+#ifdef use_dotnetfx461
+#include "scripts\products\dotnetfx461client.iss"
+#include "scripts\products\dotnetfx461full.iss"
 #endif
-#ifdef use_vc2010
-#include "scripts\products\vc2010.iss"
+#ifdef use_vc2015
+#include "scripts\products\vc2015.iss"
 #endif
 
 #include "scripts\services.iss"
@@ -133,14 +133,14 @@ begin
     Abort;
   end;
 	
-  // If no .NET 4.0 framework found, install the full thing
-#ifdef use_dotnetfx40
-  dotnetfx40full(false);
+  // If no .NET 4.6.1 framework found, install the full thing
+#ifdef use_dotnetfx461
+  dotnetfx461full(false);
 #endif
 
-  // Visual C++ 2010 Redistributable
-#ifdef use_vc2010
-  vc2010();
+  // Visual C++ 2015 Redistributable
+#ifdef use_vc2015
+  vc2015();
 #endif
 	
   Result := true;
