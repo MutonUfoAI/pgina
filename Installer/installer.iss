@@ -56,35 +56,33 @@ Name: "en"; MessagesFile: "compiler:Default.isl"
 
 [Registry]
 ; Enable TLS 1.1 and TLS 1.2 while disabling SSL 3.0 and TLS 1.0
-Root: HKCU; Subkey: "\Software\Microsoft\Windows\CurrentVersion\Internet Settings"; Flags: createvalueifdoesntexist
-Root: HKCU; Subkey: "\Software\Microsoft\Windows\CurrentVersion\Internet Settings"; Flags: createvalueifdoesntexist;  ValueType: dword; ValueName: "SecureProtocols"; ValueData: "A80"
-Root: HKLM; Subkey: "\Software\Microsoft\Windows\CurrentVersion\Internet Settings"; Flags: createvalueifdoesntexist
-Root: HKLM; Subkey: "\Software\Microsoft\Windows\CurrentVersion\Internet Settings"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "SecureProtocols"; ValueData: "A80"
-Root: HKLM; Subkey: "\Software\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DefaultSecureProtocols"; ValueData: "00000A00"
-Root: HKLM; Subkey: "\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp"; Flags: createvalueifdoesntexist
-Root: HKLM; Subkey: "\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DefaultSecureProtocols"; ValueData: "00000A00"
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0"; Flags: createvalueifdoesntexist
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Client"; Flags: createvalueifdoesntexist
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Client"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "Enabled"; ValueData: "0"
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Server"; Flags: createvalueifdoesntexist
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Server"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "Enabled"; ValueData: "0"
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0"; Flags: createvalueifdoesntexist
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client"; Flags: createvalueifdoesntexist
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "Enabled"; ValueData: "0"
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server"; Flags: createvalueifdoesntexist
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "Enabled"; ValueData: "0"
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1"; Flags: createvalueifdoesntexist
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client"; Flags: createvalueifdoesntexist
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DisabledByDefault"; ValueData: "0"
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server"; Flags: createvalueifdoesntexist
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DisabledByDefault"; ValueData: "0"
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2"; Flags: createvalueifdoesntexist
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client"; Flags: createvalueifdoesntexist
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DisabledByDefault"; ValueData: "0"
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server"; Flags: createvalueifdoesntexist
-Root: HKLM; Subkey: "\System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DisabledByDefault"; ValueData: "0"
-
-
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Internet Settings"; Flags: createvalueifdoesntexist
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Internet Settings"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "SecureProtocols"; ValueData: "$00000A80"
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Internet Settings"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Internet Settings"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "SecureProtocols"; ValueData: "$00000A80"
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DefaultSecureProtocols"; ValueData: "$00000A00"
+Root: HKLM; Subkey: "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp";Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DefaultSecureProtocols"; ValueData: "$00000A00"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Client"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Client"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "Enabled"; ValueData: "0"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Server"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Server"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "Enabled"; ValueData: "0"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "Enabled"; ValueData: "0"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "Enabled"; ValueData: "0"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DisabledByDefault"; ValueData: "0"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DisabledByDefault"; ValueData: "0"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DisabledByDefault"; ValueData: "0"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DisabledByDefault"; ValueData: "0"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
