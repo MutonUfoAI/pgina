@@ -1,5 +1,5 @@
 #define MyAppName "pGina.fork"
-#define MyAppVersion "3.9.9.12"
+#define MyAppVersion "3.9.9.13"
 #define MyAppPublisher "pGina Team"
 #define MyAppURL "http://www.pgina.org/"
 #define MyAppExeName "pGina.Configuration.exe"
@@ -8,10 +8,10 @@
 
 
 ; Use some useful packaging stuff from: http://tonaday.blogspot.com/2010/12/innosetup.html
-// dotnet_Passive enabled shows the .NET/VC2010 installation progress, as it can take quite some time
+// dotnet_Passive enabled shows the .NET/VC2015 installation progress, as it can take quite some time
 #define dotnet_Passive
-#define use_dotnetfx40
-#define use_vc2010
+#define use_dotnetfx461
+#define use_vcredist2015
 
 // Enable the required define(s) below if a local event function (prepended with Local) is used
 //#define haveLocalPrepareToInstall
@@ -54,6 +54,36 @@ ArchitecturesInstallIn64BitMode=x64 ia64
 Name: "en"; MessagesFile: "compiler:Default.isl"
 ;Name: "english"; MessagesFile: "compiler:Default.isl"
 
+[Registry]
+; Enable TLS 1.1 and TLS 1.2 while disabling SSL 3.0 and TLS 1.0
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Internet Settings"; Flags: createvalueifdoesntexist
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Internet Settings"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "SecureProtocols"; ValueData: "$00000A80"
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Internet Settings"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Internet Settings"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "SecureProtocols"; ValueData: "$00000A80"
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DefaultSecureProtocols"; ValueData: "$00000A00"
+Root: HKLM; Subkey: "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp";Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DefaultSecureProtocols"; ValueData: "$00000A00"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Client"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Client"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "Enabled"; ValueData: "0"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Server"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Server"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "Enabled"; ValueData: "0"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "Enabled"; ValueData: "0"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "Enabled"; ValueData: "0"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DisabledByDefault"; ValueData: "0"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DisabledByDefault"; ValueData: "0"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DisabledByDefault"; ValueData: "0"
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server"; Flags: createvalueifdoesntexist
+Root: HKLM; Subkey: "System\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server"; Flags: createvalueifdoesntexist; ValueType: dword; ValueName: "DisabledByDefault"; ValueData: "0"
+
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
@@ -87,12 +117,12 @@ Filename: "{app}\pGina.InstallUtil.exe"; Parameters: "post-uninstall"; StatusMsg
 #include "scripts\products\winversion.iss"
 #include "scripts\products\fileversion.iss"
 
-#ifdef use_dotnetfx40
-#include "scripts\products\dotnetfx40client.iss"
-#include "scripts\products\dotnetfx40full.iss"
+#ifdef use_dotnetfx461
+#include "scripts\products\dotnetfx461client.iss"
+#include "scripts\products\dotnetfx461full.iss"
 #endif
-#ifdef use_vc2010
-#include "scripts\products\vc2010.iss"
+#ifdef use_vcredist2015
+#include "scripts\products\vcredist2015.iss"
 #endif
 
 #include "scripts\services.iss"
@@ -133,14 +163,14 @@ begin
     Abort;
   end;
 	
-  // If no .NET 4.0 framework found, install the full thing
-#ifdef use_dotnetfx40
-  dotnetfx40full(false);
+  // If no .NET 4.6.1 framework found, install the full thing
+#ifdef use_dotnetfx461
+  dotnetfx461full(false);
 #endif
 
-  // Visual C++ 2010 Redistributable
-#ifdef use_vc2010
-  vc2010();
+  // Visual C++ 2015 Redistributable
+#ifdef use_vcredist2015
+  vcredist2015();
 #endif
 	
   Result := true;

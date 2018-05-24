@@ -1618,5 +1618,10 @@ namespace pGina.Configuration
         {
             System.Diagnostics.Process.Start("http://mutonufoai.github.io/pgina/documentation.html");
         }
+
+        private void m_pginaVersionLbl_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
