@@ -55,6 +55,7 @@ namespace pGina.Plugin.LocalMachine
             string[] MandatoryGroups = Settings.Store.MandatoryGroups;
             bool ScramblePasswords = Settings.Store.ScramblePasswords;
             bool RemoveProfiles = Settings.Store.RemoveProfiles;
+            bool DisableAccount = Settings.Store.DisableAccount;
             bool scrWhenLMFail = Settings.Store.ScramblePasswordsWhenLMAuthFails;
             string[] scrambleExceptions = Settings.Store.ScramblePasswordsExceptions;
 
@@ -62,6 +63,7 @@ namespace pGina.Plugin.LocalMachine
             m_chkAuthzLocalAdmin.Checked = AuthzLocalAdminsOnly;
             m_chkAuthzRequireLocal.Checked = AuthzLocalGroupsOnly;
             m_chkScramble.Checked = ScramblePasswords;
+            m_chkDisable.Checked = DisableAccount;
             m_chkRemoveProfile.Checked = RemoveProfiles;
             m_chkScrambleWhenLMFails.Checked = scrWhenLMFail;
 
@@ -114,6 +116,7 @@ namespace pGina.Plugin.LocalMachine
             Settings.Store.AuthzLocalGroupsOnly = m_chkAuthzRequireLocal.Checked;
             Settings.Store.ScramblePasswords = m_chkScramble.Checked;
             Settings.Store.RemoveProfiles = m_chkRemoveProfile.Checked;
+            Settings.Store.DisableAccount = m_chkDisable.Checked;
             Settings.Store.ScramblePasswordsWhenLMAuthFails = m_chkScrambleWhenLMFails.Checked;
 
             List<string> localGroups = new List<string>();

@@ -51,6 +51,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.Help = new System.Windows.Forms.Button();
+            this.m_chkDisable = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.m_localGroupDgv)).BeginInit();
@@ -157,7 +158,7 @@
             this.groupBox3.Controls.Add(this.m_groupsDgv);
             this.groupBox3.Location = new System.Drawing.Point(361, 13);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(343, 310);
+            this.groupBox3.Size = new System.Drawing.Size(343, 280);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Gateway";
@@ -264,14 +265,15 @@
             this.label1.Size = new System.Drawing.Size(246, 13);
             this.label1.TabIndex = 13;
             this.label1.Text = "Never scramble the passwords for these accounts:";
-            //
+            // 
             // groupBox4
-            //
+            // 
+            this.groupBox4.Controls.Add(this.m_chkDisable);
             this.groupBox4.Controls.Add(this.m_chkScramble);
             this.groupBox4.Controls.Add(this.m_chkRemoveProfile);
-            this.groupBox4.Location = new System.Drawing.Point(361, 329);
+            this.groupBox4.Location = new System.Drawing.Point(361, 309);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(342, 76);
+            this.groupBox4.Size = new System.Drawing.Size(342, 96);
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Notification";
@@ -285,9 +287,19 @@
             this.Help.Text = "Help";
             this.Help.UseVisualStyleBackColor = true;
             this.Help.Click += new System.EventHandler(this.m_Help_Click);
-            //
+            // 
+            // m_chkDisable
+            // 
+            this.m_chkDisable.AutoSize = true;
+            this.m_chkDisable.Location = new System.Drawing.Point(15, 65);
+            this.m_chkDisable.Name = "m_chkDisable";
+            this.m_chkDisable.Size = new System.Drawing.Size(159, 17);
+            this.m_chkDisable.TabIndex = 2;
+            this.m_chkDisable.Text = "Disable account after logout";
+            this.m_chkDisable.UseVisualStyleBackColor = true;
+            // 
             // Configuration
-            //
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(720, 447);
@@ -341,5 +353,6 @@
         private System.Windows.Forms.CheckBox m_chkScrambleWhenLMFails;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Button Help;
+        private System.Windows.Forms.CheckBox m_chkDisable;
     }
 }

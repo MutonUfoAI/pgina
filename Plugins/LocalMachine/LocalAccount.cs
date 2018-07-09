@@ -172,6 +172,17 @@ namespace pGina.Plugin.LocalMachine
             return m_sam.Children.Find(username, "User");
         }
 
+        public void EnableDisableAccount(string username, bool enable)
+        {
+            PrincipalContext ctx = new PrincipalContext(ContextType.Machine);
+            UserPrincipal user = UserPrincipal.FindByIdentity(ctx, username);
+            if (user != null)
+            {
+                user.Enabled = enable;
+                user.Save();
+            }
+        }
+
         public void ScrambleUsersPassword(string username)
         {
             using (DirectoryEntry userDe = GetUserDirectoryEntry(username))
