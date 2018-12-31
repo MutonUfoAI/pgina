@@ -12,7 +12,7 @@
 <meta name="keywords" content="" />
 <meta name="description" content="" />
 
-<link rel="stylesheet" type="text/css" href="http://mutonufoai.github.io/pgina/default_doc.css" />
+<link rel="stylesheet" type="text/css" href="https://mutonufoai.github.io/pgina/default_doc.css" />
 
 </head>
 <body>
@@ -24,20 +24,20 @@
 			<h1>pGina fork</h1>
 			<h2>Open Source Windows Authentication</h2>
 		</div>
-		<div id="logo"><a href="http://mutonufoai.github.io/pgina/index.html"><img src="http://mutonufoai.github.io/pgina/images/pginalogo.png" /></a></div>
+		<div id="logo"><a href="https://mutonufoai.github.io/pgina/index.html"><img src="https://mutonufoai.github.io/pgina/images/pginalogo.png" /></a></div>
 	</div>
 
 	
 	<div id="menu">
 		<!-- HINT: Set the class of any menu link below to "active" to make it appear active -->
 		<ul>
-			<li><a href="http://mutonufoai.github.io/pgina/index.html">Home</a></li>
-			<li><a href="http://mutonufoai.github.io/pgina/download.html">Download</a></li>
-      <li><a href="http://mutonufoai.github.io/pgina/support.html">Support</a></li>
-      <li><a href="http://mutonufoai.github.io/pgina/documentation.html" class="active">Documentation</a></li>
-      <li><a href="http://mutonufoai.github.io/pgina/develop.html">Develop</a></li>
-      <li><a href="http://mutonufoai.github.io/pgina/faq.html">FAQ</a></li>
-      <li><a href="http://mutonufoai.github.io/pgina/thanks.html">Thanks</a></li>
+			<li><a href="https://mutonufoai.github.io/pgina/index.html">Home</a></li>
+			<li><a href="https://mutonufoai.github.io/pgina/download.html">Download</a></li>
+      <li><a href="https://mutonufoai.github.io/pgina/support.html">Support</a></li>
+      <li><a href="https://mutonufoai.github.io/pgina/documentation.html" class="active">Documentation</a></li>
+      <li><a href="https://mutonufoai.github.io/pgina/develop.html">Develop</a></li>
+      <li><a href="https://mutonufoai.github.io/pgina/faq.html">FAQ</a></li>
+      <li><a href="https://mutonufoai.github.io/pgina/thanks.html">Thanks</a></li>
 		</ul>
 	</div>
 
@@ -76,7 +76,7 @@
 
 <p>After installation, start the pGina configuration application. Verify that the pGina service is running and that the Credential Provider/GINA is installed and enabled.</p>
 
-<p><img src="http://mutonufoai.github.io/pgina/images/documentation/components_green_screen.png" alt="pgina Components Enabled" /></p>
+<p><img src="https://mutonufoai.github.io/pgina/images/documentation/components_green_screen.png" alt="pgina Components Enabled" /></p>
 
 <p>pGina will not function properly unless these components are working. More information about the Credential Provider and pGina service is provied in the next section.</p>
 
@@ -88,23 +88,23 @@
 
 <p>The diagram below represents a high-level picture of a typical logon process.</p>
 
-<p><img src="http://mutonufoai.github.io/pgina/images/documentation/pGina-logon-overview.png" alt="pGina logon diagram" /></p>
+<p><img src="https://mutonufoai.github.io/pgina/images/documentation/pGina-logon-overview.png" alt="pGina logon diagram" /></p>
 
-<p><span class='greenbg'>To distinguish between pGina and a nomal windows user accounts, every pGina user is marked with a user comment of<i>&quot;pGina created&quot;</i>. Only non existent (<a href='http://mutonufoai.github.io/pgina/documentation/plugins/local_machine.html'>LocalMachine plugin</a>) and<i>&quot;pGina created&quot;</i>user accounts are touched by pGina, if that’s not the case then this particular account wont be altered by pGina. To go further, local non pGina users and Domain users dont run through the plugin chain!</span></p>
+<p><span class='greenbg'>To distinguish between pGina and a nomal windows user accounts, every pGina user is marked with a user comment of<i>&quot;pGina created&quot;</i>. Only non existent (<a href='https://mutonufoai.github.io/pgina/documentation/plugins/local_machine.html'>LocalMachine plugin</a>) and<i>&quot;pGina created&quot;</i>user accounts are touched by pGina, if that’s not the case then this particular account wont be altered by pGina. To go further, local non pGina users and Domain users dont run through the plugin chain!</span></p>
 
 <p>The logon process proceeds as follows:</p>
 
 <ol>
 <li>The user enters their credentials at the pGina logon user interface. Note that this UI may be one of several options (called credential providers) presented to the user. For example, the user might be presented with several tiles, many of which are local accounts with only one being the pGina UI.</li>
 
-<li>The pGina credential provider (or GINA) passes the credentials to the pGina service. If the user is currently logging off a relogin is denied. If the user is not a pGina user than he is processed by WinAPI authentication procedures, and if a user was already authenticated he will be processed by the WinAPI as well. If nothing from above apply, than the service sends those credentials through the <a href="#plugins">plugin pipeline</a> described below. <strong>This stage potentially fails if you modified the username by using a plugin like <a href="http://mutonufoai.github.io/pgina/documentation/plugins/username_mod.html">Username Modification</a>!</strong></li>
+<li>The pGina credential provider (or GINA) passes the credentials to the pGina service. If the user is currently logging off a relogin is denied. If the user is not a pGina user than he is processed by WinAPI authentication procedures, and if a user was already authenticated he will be processed by the WinAPI as well. If nothing from above apply, than the service sends those credentials through the <a href="#plugins">plugin pipeline</a> described below. <strong>This stage potentially fails if you modified the username by using a plugin like <a href="https://mutonufoai.github.io/pgina/documentation/plugins/username_mod.html">Username Modification</a>!</strong></li>
 
 <li>After the credentials have been <a href="#plugins">processed by the plugins</a>, the pGina service sends a result (success/failure) along with a set of credentials (username/ password) back to the pGina CP. Note that these credentials may not be the same as those that were provided by the user. They may have been altered at some stage by one or more plugins.</li>
 
-<li>If the result returned from step three is success, the pGina credential provider passes the (possibly altered) credentials to Windows indicating a successful logon attempt. Note that pGina does not actually log the user on to the machine. It is the Windows OS itself that does that. This means that if a local account does not exist that matches the credentials, the logon will fail, even if the pGina plugins have registered success. Therefore, it is often the case that one of the plugins will be responsible for creating a local (often temporary) account. The plugin called “Local Machine” takes care of this in the Gateway stage. For details, see the <a href="http://mutonufoai.github.io/pgina/documentation/plugins/local_machine.html">documentation for the Local Machine plugin</a>.</li>
+<li>If the result returned from step three is success, the pGina credential provider passes the (possibly altered) credentials to Windows indicating a successful logon attempt. Note that pGina does not actually log the user on to the machine. It is the Windows OS itself that does that. This means that if a local account does not exist that matches the credentials, the logon will fail, even if the pGina plugins have registered success. Therefore, it is often the case that one of the plugins will be responsible for creating a local (often temporary) account. The plugin called “Local Machine” takes care of this in the Gateway stage. For details, see the <a href="https://mutonufoai.github.io/pgina/documentation/plugins/local_machine.html">documentation for the Local Machine plugin</a>.</li>
 </ol>
 
-<p>As indicated above, it is important to note that pGina does not actually log the user on to the computer. The Windows OS is still ultimately responsible for logging the user on to the machine and possibly creating a profile for the user. pGina’s job is to authenticate and authorize the user, and perform any other pre-logon actions that may be needed. This means that in order for a logon to be successful, a local account must exist that matches the credentails returned by the pGina CP (Credential Provider). In a typical case, pGina would be configured to create the local account prior to logon, and possibly delete that account after logoff (see the <a href="http://mutonufoai.github.io/pgina/documentation/plugins/local_machine.html">LocalMachine plugin</a>).</p>
+<p>As indicated above, it is important to note that pGina does not actually log the user on to the computer. The Windows OS is still ultimately responsible for logging the user on to the machine and possibly creating a profile for the user. pGina’s job is to authenticate and authorize the user, and perform any other pre-logon actions that may be needed. This means that in order for a logon to be successful, a local account must exist that matches the credentails returned by the pGina CP (Credential Provider). In a typical case, pGina would be configured to create the local account prior to logon, and possibly delete that account after logoff (see the <a href="https://mutonufoai.github.io/pgina/documentation/plugins/local_machine.html">LocalMachine plugin</a>).</p>
 
 <p>To explain the logon in a different way </p>
 
@@ -150,7 +150,7 @@
 
 <p>pGina consists of two main components: the Credential Provider (or GINA), and the pGina service (which manages the plugins).</p>
 
-<p><img src="http://mutonufoai.github.io/pgina/images/documentation/pgina_components.png" alt="pGina components" /></p>
+<p><img src="https://mutonufoai.github.io/pgina/images/documentation/pgina_components.png" alt="pGina components" /></p>
 
 <p>The CP augments or replaces the default Windows authentication user interface. It plugs-in to the Windows system and can configure the UI that is displayed at login time (or during unlock, UAC control, etc.). The pGina CP, however, does very little on its own. It simply receives the user’s credentials and passes them along to the pGina service via a named pipe, and then waits for a response from the service. User authentication/authorization is instead managed by the plugins that run within the pGina service.</p>
 
@@ -158,7 +158,7 @@
 
 <h3 id="configuration">Configuration</h3>
 
-<p><img src="http://mutonufoai.github.io/pgina/images/documentation/pgina_configuration_global.png" alt="pGina stages" /></p>
+<p><img src="https://mutonufoai.github.io/pgina/images/documentation/pgina_configuration_global.png" alt="pGina stages" /></p>
 
 <ul>
 <li><strong>Tile Image</strong> - You can set your own Image here. 200x200 BMP</li>
@@ -210,7 +210,7 @@
 
 <p>pGina manages the logon process by delegating the work to a set of zero or more plugins. Plugins have the job of deciding whether or not the user is who she says she is (authentication), whether the user should be granted access (authorization), and taking other login-time actions. The process involves a pipeline consisting of three main stages as illustrated in the following diagram.</p>
 
-<p><img src="http://mutonufoai.github.io/pgina/images/documentation/pgina_stages.png" alt="pGina stages" /></p>
+<p><img src="https://mutonufoai.github.io/pgina/images/documentation/pgina_stages.png" alt="pGina stages" /></p>
 
 <p>Each stage involves zero or more plugins, and a given plugin may be involved in multiple stages. After the user provides his/her credentials, pGina passes through the three stages one at a time, in the order shown above. Each stage may succeed or fail depending on the results of the plugins involved. The purpose of each stage is summarized below.</p>
 
@@ -247,7 +247,7 @@
 
 <p>During the execution of the above pipeline, pGina maintains some information about the user. This includes user-name, password, group membership and other information. This information can be altered by plugins during the pipeline, and/or used by plugins to modify the state of the machine. For example, plugins may add or remove groups, alter the username or password, or a plugin might attempt to create a local account using this information. This means that the order that the plugins execute within each stage of the pipeline is important (see below), and different orders may produce different results. One must be careful to configure your plugins in the order that makes sense for your setup. The final values of username/password/domain are passed along to Windows to complete the logon process.</p>
 
-<p>In a typical setup one wants to make sure that a local account exists or is created at the end of the pipeline. To do so, one should configure the LocalMachine plugin so that it executes last in the Gateway stage. It is the Gateway stage of the <a href="http://mutonufoai.github.io/pgina/documentation/plugins/local_machine.html">LocalMachine</a> plugin that creates (if necessary) local accounts. If the <a href="http://mutonufoai.github.io/pgina/documentation/plugins/local_machine.html">LocalMachine</a> plugin executes earlier, it may miss important information for the local account (such as group membership).</p>
+<p>In a typical setup one wants to make sure that a local account exists or is created at the end of the pipeline. To do so, one should configure the LocalMachine plugin so that it executes last in the Gateway stage. It is the Gateway stage of the <a href="https://mutonufoai.github.io/pgina/documentation/plugins/local_machine.html">LocalMachine</a> plugin that creates (if necessary) local accounts. If the <a href="https://mutonufoai.github.io/pgina/documentation/plugins/local_machine.html">LocalMachine</a> plugin executes earlier, it may miss important information for the local account (such as group membership).</p>
 
 <h3 id="event_notifications">Event Notifications</h3>
 
@@ -263,19 +263,19 @@
 
 <p>To configure a plugin, double click on it or select it and click on “Configure..”. The plugin’s configuration dialog will appear. The options are plugin specific, and you should refer to the documentation for each plugin for details about configuration of an individual plugin.</p>
 
-<p><img src="http://mutonufoai.github.io/pgina/images/documentation/pgina_configuration_plugins.png" alt="pGina stages" /></p>
+<p><img src="https://mutonufoai.github.io/pgina/images/documentation/pgina_configuration_plugins.png" alt="pGina stages" /></p>
 
 <h2 id="ordering_plugins">Ordering Plugins</h2>
 
 <p>Under the “Plugin Order” tab, you can determine the order that each plugin is invoked. There is a list for each pGina stage, and you can re-order the plugins within each list.</p>
 
-<p><img src="http://mutonufoai.github.io/pgina/images/documentation/pgina_configuration_pluginorder.png" alt="pGina stages" /></p>
+<p><img src="https://mutonufoai.github.io/pgina/images/documentation/pgina_configuration_pluginorder.png" alt="pGina stages" /></p>
 
 <h2 id="credential_provider_filter">Credential Provider Filter</h2>
 
 <p>Credential Providers can be filtered for the Logon, Unlock, Change Password and Cred UI screens. Installed Providers are listed under <i>Credential Provider</i>. If you want pGina to be the only Credential Provider available on the logon screen than you need to enable the <i>Logon</i> checkbox for the <i>PasswordProvider</i>.</p>
 
-<p><img src="http://mutonufoai.github.io/pgina/images/documentation/pgina_configuration_providerfilter.png" alt="pGina stages" /></p>
+<p><img src="https://mutonufoai.github.io/pgina/images/documentation/pgina_configuration_providerfilter.png" alt="pGina stages" /></p>
 
 <h2 id="logging">Logging</h2>
 
