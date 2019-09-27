@@ -268,7 +268,7 @@ namespace pGina.Plugin.Ldap
             {
                 try
                 {
-                    X509Store certStore = new X509Store(StoreLocation.LocalMachine);
+                    X509Store certStore = new X509Store(StoreName.Root, StoreLocation.LocalMachine);
                     certStore.Open(OpenFlags.ReadOnly);
                     if (certStore.Certificates.Contains(cert))
                         return true;
